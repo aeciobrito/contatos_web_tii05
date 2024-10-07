@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 require_once '../model/Usuario.php';
 require_once '../dao/UsuarioDAO.php';
 
@@ -36,13 +38,23 @@ function handlerRegistration()
 
     // Etapa de segurança: criação da senha segura e geração do token
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+    $token = bin2hex(random_bytes(25));
 
     // Criação do Usuário no Banco de Dados
-    $usuario = new Usuario(null, $nome, $hashed_password, $email, null);
+    $usuario = new Usuario(null, $nome, $hashed_password, $email, $token);
     $usuarioDAO = new UsuarioDAO();
-
-    $usuarioDAO->create($usuario);
+   
     // Redirecionar para a página do index
+    if($usuarioDAO->create($usuario)) 
+    {
+        $_SESSION['token'] = $token;
+        header('Location: ../views/index.php');
+        exit();
+    } else 
+    {
+        echo "Erro ao registrar no banco de dados";
+        exit();
+    }
 }
 
 ?>
