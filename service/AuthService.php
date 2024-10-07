@@ -32,11 +32,13 @@ function handlerRegistration()
     if($password !== $confirm_password) {
         echo "Senhas incompatíveis.";
         return;
-    }
+    }    
 
     // Etapa de segurança: criação da senha segura e geração do token
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
     // Criação do Usuário no Banco de Dados
-    $usuario = new Usuario(null, $nome, $password, $email, null);
+    $usuario = new Usuario(null, $nome, $hashed_password, $email, null);
     $usuarioDAO = new UsuarioDAO();
 
     $usuarioDAO->create($usuario);
