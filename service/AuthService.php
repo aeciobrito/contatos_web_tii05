@@ -15,6 +15,9 @@ switch($type)
     case "login":
         handleLogin();
         break;
+    case "logout":
+        handleLogout();
+        break;
     default:
         echo "Ação inválida";
         break;
@@ -84,10 +87,21 @@ function handleLogin()
 
     // Geração de novo token e atualização do token no banco de dados
     $token = bin2hex(random_bytes(25));
-    $usuarioDAO->updateToken($usuario['id'], $token);
+    $usuarioDAO->updateToken($usuario->getId(), $token);
 
     $_SESSION['token'] = $token;
     header('Location: ../views/index.php');
+    exit();
+}
+
+function handleLogout()
+{
+    // Limpar todas as variáveis de sessão
+    $_SESSION = array();
+    // Destruri a sessão
+    session_destroy();
+    // Redicreiona para a página de login
+    header("Location: ../views/index.php");
     exit();
 }
 
